@@ -5,6 +5,11 @@ st.set_page_config(page_title="Ice Cream Planogram Pro", page_icon="🍦", layou
 
 # Custom CSS за професионален изглед
 st.markdown("""
+/* Скрива горното меню (трите точки) и иконата на GitHub */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
     <style>
     .main {
         background-color: #f5f7f9;
