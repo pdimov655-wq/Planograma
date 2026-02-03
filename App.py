@@ -1,6 +1,6 @@
 import streamlit as st
 
-# 1. Конфигурация
+# 1. Основна конфигурация
 st.set_page_config(
     page_title="Ice Cream Planogram Pro", 
     page_icon="🍦", 
@@ -8,38 +8,76 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- ПРОФЕСИОНАЛЕН ДИЗАЙН (CSS) ---
+# --- ПРОФЕСИОНАЛЕН ДИЗАЙН СЪС ЗАЩИТА ОТ DARK MODE ---
 st.markdown("""
     <style>
+    /* Скриване на системни менюта */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    .stApp { background-color: #f8f9fa; }
+    
+    /* ФОРСИРАНЕ НА СВЕТЛА ТЕМА (Force Light Theme) */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+        background-color: #f8f9fa !important;
+    }
+
+    /* Фиксиране на основния цвят на текста */
+    .stMarkdown, p, label, .stSelectbox label, .stRadio label {
+        color: #1e3a8a !important;
+        font-weight: 600 !important;
+    }
+
+    /* Стилизиране на белите контейнери за избор */
+    [data-testid="stVerticalBlock"] > div > div > div.stSelectbox, 
+    [data-testid="stVerticalBlock"] > div > div > div.stRadio {
+        background-color: white !important;
+        padding: 20px !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+        border: 1px solid #e0e0e0 !important;
+    }
+
+    /* Стилизиране на бутоните */
     div.stButton > button:first-child {
-        background-color: #0046ad;
-        color: white;
-        border-radius: 12px;
-        height: 50px;
-        width: 100%;
-        font-weight: bold;
+        background-color: #0046ad !important;
+        color: white !important;
+        border-radius: 12px !important;
+        height: 55px !important;
+        width: 100% !important;
+        font-weight: bold !important;
+        font-size: 18px !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2) !important;
     }
-    .stSelectbox, .stRadio {
-        background-color: white;
-        padding: 15px;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        margin-bottom: 10px;
+
+    /* Фиксиране на цветовете в падащите менюта (Selectbox) */
+    div[data-baseweb="select"] > div {
+        background-color: white !important;
+        color: #1e3a8a !important;
     }
-    h1 { color: #1e3a8a; text-align: center; }
+
+    /* Заглавие */
+    h1 {
+        color: #1e3a8a !important;
+        text-align: center !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    
+    /* Инфо съобщения */
+    .stAlert {
+        background-color: #e3f2fd !important;
+        color: #0d47a1 !important;
+        border: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # --- СИСТЕМА ЗА ВХОД ---
 if "password_correct" not in st.session_state:
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown("<h2 style='text-align: center;'>🔒 Вход</h2>", unsafe_allow_html=True)
-        pwd = st.text_input("Парола", type="password")
+        st.markdown("<br><h2 style='text-align: center; color: #1e3a8a;'>🔒 Вход</h2>", unsafe_allow_html=True)
+        pwd = st.text_input("Въведете парола", type="password")
         if st.button("ВЛЕЗ"):
             if pwd == "ice123":
                 st.session_state["password_correct"] = True
@@ -49,10 +87,11 @@ if "password_correct" not in st.session_state:
     st.stop()
 
 # --- ГЛАВЕН ИНТЕРФЕЙС ---
-st.title("🍦 Дигитален Асистент за Планограми")
+st.markdown("<h1>🍦 Дигитален Асистент за Планограми</h1>", unsafe_allow_html=True)
 
+# Изход в страничното меню
 with st.sidebar:
-    if st.button("Изход"):
+    if st.button("Изход (Logout)"):
         del st.session_state["password_correct"]
         st.rerun()
 
@@ -93,12 +132,12 @@ with col1:
         st.write("**3. Марка:**")
         brand = st.radio("", ["Milka", "Nestlé"], horizontal=True)
     else:
-        st.info("💡 Гондолите са със смесено излагане (Mix) и фиксиран размер.")
+        st.info("💡 Гондолите са със смесено излагане (Mix).")
 
 with col2:
     st.subheader("🖼️ Визуализация")
     
-    # Подготовка на данните за показване и търсене
+    # Подготовка на избора
     if is_gondola:
         current_selection = f"Микс Продукти | {specific_layout}"
         search_brand = "Mix"
@@ -113,23 +152,17 @@ with col2:
     if st.button("📊 ВИЖ ПЛАНОГРАМА"):
         with st.spinner('Зареждане на изображението...'):
             
-            # --- ТВОЯТА БАЗА ДАННИ С ЛИНКОВЕ ---
             planogram_links = {
-                # ОМВ Гондола 4х11 (Твоят реален линк)
+                # ОМВ Гондола 4х11
                 ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
-                
-                # Примери за бъдещи линкове:
-                # ("Mix", "Гондола 4х8", "N/A"): "тук_линк",
-                # ("Milka", "ОМВ", "120см"): "тук_линк",
             }
 
-            # Търсене в речника
             image_url = planogram_links.get((search_brand, search_target, freezer_size))
 
             if image_url:
                 st.image(image_url, caption=current_selection, use_container_width=True)
             else:
-                st.warning("⚠️ Все още не е качена снимка за тази комбинация.")
-                st.image("https://via.placeholder.com/800x500.png?text=No+Image+Found", use_container_width=True)
+                st.warning("⚠️ Снимката все още не е качена в базата данни.")
+                st.image("https://via.placeholder.com/800x500.png?text=No+Planogram+Available", use_container_width=True)
 
-st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.7</small></center>", unsafe_allow_html=True)
+st.markdown("<br><hr><center><small style='color: #1e3a8a;'>© 2026 Ice Cream Sales Team | V 1.8</small></center>", unsafe_allow_html=True)
