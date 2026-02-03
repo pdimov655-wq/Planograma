@@ -1,107 +1,141 @@
 import streamlit as st
 
 # 1. Основна конфигурация и дизайн
-st.set_page_config(page_title="Ice Cream Planogram Pro", page_icon="🍦", layout="wide")
+st.set_page_config(
+    page_title="Ice Cream Planogram Pro", 
+    page_icon="🍦", 
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# Custom CSS за професионален изглед
+# --- ПРОФЕСИОНАЛЕН ДИЗАЙН (CSS) ---
 st.markdown("""
-
     <style>
-    /* Скрива горното меню (трите точки) и иконата на GitHub */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-
-    .main {
-        background-color: #f5f7f9;
+    /* Скриване на системните менюта на Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Основен стил */
+    .stApp {
+        background-color: #f8f9fa;
     }
-    .stButton>button {
-        width: 100%;
-        border-radius: 20px;
-        height: 3em;
-        background-color: #007bff;
+    
+    /* Стилизиране на бутоните */
+    div.stButton > button:first-child {
+        background-color: #0046ad;
         color: white;
-        font-weight: bold;
+        border-radius: 12px;
         border: none;
+        height: 50px;
+        width: 100%;
+        font-weight: bold;
+        transition: 0.3s;
     }
-    .stButton>button:hover {
-        background-color: #0056b3;
+    
+    div.stButton > button:first-child:hover {
+        background-color: #003087;
+        border: none;
         color: white;
     }
+
+    /* Стилизиране на белите контейнери за избор */
     .stSelectbox, .stRadio {
         background-color: white;
-        padding: 15px;
+        padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 10px;
     }
+    
+    /* Заглавия */
     h1 {
         color: #1e3a8a;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ПРОВЕРКА НА ПАРОЛА ---
+# --- СИСТЕМА ЗА ВХОД (ПАРОЛА) ---
 def check_password():
     if "password_correct" not in st.session_state:
-        st.markdown("<h2 style='text-align: center;'>Вход в системата</h2>", unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-            pwd = st.text_input("Парола", type="password")
-            if st.button("Влез"):
-                if pwd == "ice123":
+            st.markdown("<h2 style='text-align: center;'>🔒 Вход в системата</h2>", unsafe_allow_html=True)
+            pwd = st.text_input("Въведете парола за достъп", type="password")
+            if st.button("ВЛЕЗ"):
+                if pwd == "ice123": # <--- Парола
                     st.session_state["password_correct"] = True
                     st.rerun()
                 else:
-                    st.error("Грешна парола")
+                    st.error("❌ Грешна парола! Опитайте отново.")
         return False
     return True
 
+# --- ГЛАВЕН ИНТЕРФЕЙС ---
 if check_password():
-    # --- СТРАНИЧНА ЛЕНТА (SIDEBAR) ---
+    # Заглавие
+    st.title("🍦 Дигитален Асистент за Планограми")
+    
+    # Изход в страничното меню
     with st.sidebar:
-        st.image("https://via.placeholder.com/150x80.png?text=LOGO", use_container_width=True)
-        st.title("Навигация")
-        st.info("Използвайте менюто за избор на обект и фризер.")
-        if st.button("Изход"):
+        st.markdown("### Потребителски панел")
+        if st.button("Изход (Logout)"):
             del st.session_state["password_correct"]
             st.rerun()
 
-    # --- ОСНОВНА ЧАСТ ---
-    st.title("🍦 Планограми: Дигитален Асистент")
-    
-    col1, col2 = st.columns([1, 1], gap="large")
+    # Разпределение на екрана
+    col1, col2 = st.columns([1, 1.5], gap="large")
 
     with col1:
-        st.subheader("📋 Параметри на обекта")
-        client_type = st.selectbox("Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
+        st.subheader("📋 Избор на параметри")
         
+        # 1. Избор на канал
+        client_type = st.selectbox("1. Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
+        
+        # Динамично подменю за бензиностанции (Само ОМВ и Лукойл)
+        sub_channel = None
         if client_type == "Петролен канал":
-            sub_channel = st.selectbox("Верига бензиностанции", ["OMV", "Shell", "Lukoil", "Rompetrol", "Petrol", "Others"])
+            sub_channel = st.selectbox("Изберете верига", ["ОМВ", "Лукойл"])
         else:
             sub_channel = client_type
 
-        freezer_size = st.radio("Размер на фризера", ["100см", "120см", "150см", "180см"], horizontal=True)
-        brand = st.radio("Избор на бранд", ["Milka", "Nestlé"], horizontal=True)
+        # 2. Размер на фризера (Добавени 80см, 160см и Вертикален)
+        freezer_size = st.radio(
+            "2. Размер на фризера", 
+            ["80см", "100см", "120см", "150см", "160см", "180см", "Вертикален"], 
+            horizontal=False # Списъкът стана дълъг, вертикално е по-прегледно
+        )
+
+        # 3. Марка
+        brand = st.radio("3. Изберете марка", ["Milka", "Nestlé"], horizontal=True)
 
     with col2:
-        st.subheader("🖼️ Визуализация")
-        st.write("") # Празно пространство за подравняване
+        st.subheader("🖼️ Планограма за обекта")
         
-        # Бутон с икона
-        if st.button("📊 ГЕНЕРИРАЙ ПЛАН"):
-            with st.spinner('Зареждане на планограмата...'):
-                # Тук поставяш логиката за линковете (както в предишния пример)
-                # За демонстрация използваме placeholder:
-                st.success(f"Готов план за {sub_channel} ({freezer_size})")
-                st.image("https://via.placeholder.com/600x400.png?text=Planogram+View", use_container_width=True)
+        # Потвърждение на селекцията
+        current_selection = f"{brand} | {sub_channel} | {freezer_size}"
+        st.info(f"📍 Текущ избор: **{current_selection}**")
+
+        # БУТОН ЗА ГЕНЕРИРАНЕ
+        if st.button("📊 ВИЖ ПЛАНОГРАМА"):
+            with st.spinner('Зареждане на изображението...'):
                 
-                # Допълнителна професионална опция:
-                st.download_button(label="📥 Изтегли PDF за принтиране", 
-                                 data="Sample Data", 
-                                 file_name=f"Planogram_{sub_channel}.pdf")
+                # Тук описвате линковете към снимките
+                planogram_links = {
+                    ("Milka", "ОМВ", "120см"): "https://raw.githubusercontent.com/user/repo/main/images/milka_omv_120.jpg",
+                    ("Nestlé", "Лукойл", "Вертикален"): "https://raw.githubusercontent.com/user/repo/main/images/nestle_lukoil_vert.jpg",
+                }
+
+                image_url = planogram_links.get((brand, sub_channel, freezer_size))
+
+                if image_url and "raw.githubusercontent" in image_url:
+                    st.image(image_url, caption=f"Одобрена подредба за {current_selection}", use_container_width=True)
+                else:
+                    st.warning("⚠️ Не е намерена специфична планограма за този избор.")
+                    st.image("https://via.placeholder.com/800x500.png?text=No+Planogram+Available", use_container_width=True)
 
     # Футър
-    st.markdown("---")
-    st.caption("© 2026 Търговски отдел | Всички права запазени")
-    
+    st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | Version 1.3</small></center>", unsafe_allow_html=True)
