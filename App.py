@@ -1,6 +1,6 @@
 import streamlit as st
 
-# 1. Основна конфигурация и дизайн
+# 1. Основна конфигурация
 st.set_page_config(
     page_title="Ice Cream Planogram Pro", 
     page_icon="🍦", 
@@ -11,17 +11,14 @@ st.set_page_config(
 # --- ПРОФЕСИОНАЛЕН ДИЗАЙН (CSS) ---
 st.markdown("""
     <style>
-    /* Скриване на системните менюта на Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Основен стил */
     .stApp {
         background-color: #f8f9fa;
     }
     
-    /* Стилизиране на бутоните */
     div.stButton > button:first-child {
         background-color: #0046ad;
         color: white;
@@ -30,112 +27,110 @@ st.markdown("""
         height: 50px;
         width: 100%;
         font-weight: bold;
-        transition: 0.3s;
     }
     
-    div.stButton > button:first-child:hover {
-        background-color: #003087;
-        border: none;
-        color: white;
-    }
-
-    /* Стилизиране на белите контейнери за избор */
     .stSelectbox, .stRadio {
         background-color: white;
-        padding: 20px;
+        padding: 15px;
         border-radius: 15px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         margin-bottom: 10px;
     }
     
-    /* Заглавия */
     h1 {
         color: #1e3a8a;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         text-align: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- СИСТЕМА ЗА ВХОД (ПАРОЛА) ---
+# --- СИСТЕМА ЗА ВХОД ---
 def check_password():
     if "password_correct" not in st.session_state:
-        st.markdown("<br><br>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
-            st.markdown("<h2 style='text-align: center;'>🔒 Вход в системата</h2>", unsafe_allow_html=True)
-            pwd = st.text_input("Въведете парола за достъп", type="password")
+            st.markdown("<h2 style='text-align: center;'>🔒 Вход</h2>", unsafe_allow_html=True)
+            pwd = st.text_input("Парола", type="password")
             if st.button("ВЛЕЗ"):
-                if pwd == "ice123": # <--- Парола
+                if pwd == "ice123":
                     st.session_state["password_correct"] = True
                     st.rerun()
                 else:
-                    st.error("❌ Грешна парола! Опитайте отново.")
+                    st.error("❌ Грешна парола!")
         return False
     return True
 
-# --- ГЛАВЕН ИНТЕРФЕЙС ---
 if check_password():
-    # Заглавие
     st.title("🍦 Дигитален Асистент за Планограми")
     
-    # Изход в страничното меню
     with st.sidebar:
-        st.markdown("### Потребителски панел")
-        if st.button("Изход (Logout)"):
+        if st.button("Изход"):
             del st.session_state["password_correct"]
             st.rerun()
 
-    # Разпределение на екрана
     col1, col2 = st.columns([1, 1.5], gap="large")
 
     with col1:
-        st.subheader("📋 Избор на параметри")
+        st.subheader("📋 Параметри")
         
-        # 1. Избор на канал
+        # 1. Тип клиент
         client_type = st.selectbox("1. Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
         
-        # Динамично подменю за бензиностанции (Само ОМВ и Лукойл)
-        sub_channel = None
+        sub_channel = client_type
+        specific_layout = None
+
         if client_type == "Петролен канал":
             sub_channel = st.selectbox("Изберете верига", ["ОМВ", "Лукойл"])
-        else:
-            sub_channel = client_type
+            
+            # СПЕЦИАЛНО ЗА ОМВ: Опции за Гондола
+            if sub_channel == "ОМВ":
+                specific_layout = st.selectbox(
+                    "Тип излагане (ОМВ):", 
+                    ["Стандартен фризер", "Гондола 4х11", "Гондола 4х8", "Гондола 4х4"]
+                )
 
-        # 2. Размер на фризера (Добавени 80см, 160см и Вертикален)
+        # 2. Размер на фризера (Подредени на редове за по-добър изглед)
+        st.write("**2. Размер на фризера:**")
+        # Ако е избрана Гондола, размерът често е фиксиран или ирелевантен, 
+        # но оставяме избора, освен ако не искате да го скриете.
         freezer_size = st.radio(
-            "2. Размер на фризера", 
+            "", 
             ["80см", "100см", "120см", "150см", "160см", "180см", "Вертикален"], 
-            horizontal=False # Списъкът стана дълъг, вертикално е по-прегледно
+            horizontal=True # Това подрежда елементите на редове
         )
 
         # 3. Марка
-        brand = st.radio("3. Изберете марка", ["Milka", "Nestlé"], horizontal=True)
+        brand = st.radio("3. Марка", ["Milka", "Nestlé"], horizontal=True)
 
     with col2:
-        st.subheader("🖼️ Планограма за обекта")
+        st.subheader("🖼️ Визуализация")
         
-        # Потвърждение на селекцията
-        current_selection = f"{brand} | {sub_channel} | {freezer_size}"
-        st.info(f"📍 Текущ избор: **{current_selection}**")
+        # Генериране на финалното име за търсене
+        display_name = sub_channel
+        if specific_layout and specific_layout != "Стандартен фризер":
+            display_name = specific_layout
+            
+        current_selection = f"{brand} | {display_name} | {freezer_size}"
+        st.info(f"📍 Избор: **{current_selection}**")
 
-        # БУТОН ЗА ГЕНЕРИРАНЕ
         if st.button("📊 ВИЖ ПЛАНОГРАМА"):
-            with st.spinner('Зареждане на изображението...'):
+            with st.spinner('Зареждане...'):
                 
-                # Тук описвате линковете към снимките
+                # Примерен речник с новите опции
                 planogram_links = {
-                    ("Milka", "ОМВ", "120см"): "https://raw.githubusercontent.com/user/repo/main/images/milka_omv_120.jpg",
-                    ("Nestlé", "Лукойл", "Вертикален"): "https://raw.githubusercontent.com/user/repo/main/images/nestle_lukoil_vert.jpg",
+                    ("Milka", "Гондола 4х11", "120см"): "https://raw.githubusercontent.com/user/repo/main/images/milka_gondola_4x11.jpg",
+                    ("Nestlé", "ОМВ", "150см"): "https://raw.githubusercontent.com/user/repo/main/images/nestle_omv_150.jpg",
                 }
 
-                image_url = planogram_links.get((brand, sub_channel, freezer_size))
+                # Ключ за търсене: използваме specific_layout ако е Гондола, иначе sub_channel
+                search_target = specific_layout if specific_layout and "Гондола" in specific_layout else sub_channel
+                image_url = planogram_links.get((brand, search_target, freezer_size))
 
-                if image_url and "raw.githubusercontent" in image_url:
-                    st.image(image_url, caption=f"Одобрена подредба за {current_selection}", use_container_width=True)
+                if image_url:
+                    st.image(image_url, caption=current_selection, use_container_width=True)
                 else:
-                    st.warning("⚠️ Не е намерена специфична планограма за този избор.")
-                    st.image("https://via.placeholder.com/800x500.png?text=No+Planogram+Available", use_container_width=True)
+                    st.warning("⚠️ Няма специфична снимка за този избор.")
+                    st.image("https://via.placeholder.com/800x500.png?text=No+Planogram", use_container_width=True)
 
-    # Футър
-    st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | Version 1.3</small></center>", unsafe_allow_html=True)
+    st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.4</small></center>", unsafe_allow_html=True)
+    
