@@ -76,16 +76,13 @@ with col1:
                 ["Стандартен фризер", "Гондола 4х11", "Гондола 4х8", "Гондола 4х4"]
             )
 
-    # Проверка дали е избрана Гондола
+    # Логика за скриване на менютата при Гондола
     is_gondola = "Гондола" in specific_layout
     
-    # Стойности по подразбиране
     freezer_size = "N/A"
     brand = "Mix"
 
-    # ПОКАЗВАМЕ РАЗМЕР И МАРКА САМО АКО НЕ Е ГОНДОЛА
     if not is_gondola:
-        # 2. Размер на фризера
         st.write("**2. Размер на фризера:**")
         freezer_size = st.radio(
             "", 
@@ -93,7 +90,6 @@ with col1:
             horizontal=True
         )
         
-        # 3. Марка
         st.write("**3. Марка:**")
         brand = st.radio("", ["Milka", "Nestlé"], horizontal=True)
     else:
@@ -102,7 +98,7 @@ with col1:
 with col2:
     st.subheader("🖼️ Визуализация")
     
-    # Формиране на име за избор (за показване и за търсене)
+    # Подготовка на данните за показване и търсене
     if is_gondola:
         current_selection = f"Микс Продукти | {specific_layout}"
         search_brand = "Mix"
@@ -115,22 +111,25 @@ with col2:
     st.info(f"📍 Избор: **{current_selection}**")
 
     if st.button("📊 ВИЖ ПЛАНОГРАМА"):
-        with st.spinner('Зареждане...'):
-            # Речникът вече включва "Mix" за гондолите
+        with st.spinner('Зареждане на изображението...'):
+            
+            # --- ТВОЯТА БАЗА ДАННИ С ЛИНКОВЕ ---
             planogram_links = {
-                # Пример за Гондола
-                ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/user/repo/main/images/gondola_4x11_mix.jpg",
-                # Примери за стандартни фризери
-                ("Milka", "ОМВ", "120см"): "https://raw.githubusercontent.com/user/repo/main/images/milka_omv_120.jpg",
-                ("Nestlé", "Лукойл", "100см"): "https://raw.githubusercontent.com/user/repo/main/images/nestle_lukoil_100.jpg",
+                # ОМВ Гондола 4х11 (Твоят реален линк)
+                ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
+                
+                # Примери за бъдещи линкове:
+                # ("Mix", "Гондола 4х8", "N/A"): "тук_линк",
+                # ("Milka", "ОМВ", "120см"): "тук_линк",
             }
 
+            # Търсене в речника
             image_url = planogram_links.get((search_brand, search_target, freezer_size))
 
             if image_url:
                 st.image(image_url, caption=current_selection, use_container_width=True)
             else:
-                st.warning("⚠️ Няма качена снимка за този избор.")
-                st.image("https://via.placeholder.com/800x500.png?text=No+Planogram", use_container_width=True)
+                st.warning("⚠️ Все още не е качена снимка за тази комбинация.")
+                st.image("https://via.placeholder.com/800x500.png?text=No+Image+Found", use_container_width=True)
 
-st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.6</small></center>", unsafe_allow_html=True)
+st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.7</small></center>", unsafe_allow_html=True)
