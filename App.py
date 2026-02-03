@@ -1,62 +1,74 @@
 import streamlit as st
 
-# 1. Конфигурация на страницата
+# Конфигурация на страницата
 st.set_page_config(page_title="Ice Cream Planograms", page_icon="🍦")
 
 # --- ФУНКЦИЯ ЗА ПАРОЛА ---
 def check_password():
-    """Връща True, ако потребителят е въвел правилната парола."""
     def password_entered():
-        if st.session_state["password"] == "ice123": # <--- ТВОЯТА ПАРОЛА ТУК
+        if st.session_state["password"] == "ice123": # <--- ТВОЯТА ПАРОЛА
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Изтриваме паролата от състоянието за сигурност
+            del st.session_state["password"]
         else:
             st.session_state["password_correct"] = False
 
     if "password_correct" not in st.session_state:
-        # Първо показване, въвеждане на парола
         st.text_input("Въведете парола за достъп:", type="password", on_change=password_entered, key="password")
         return False
     elif not st.session_state["password_correct"]:
-        # Сгрешена парола
         st.text_input("Грешна парола! Опитайте отново:", type="password", on_change=password_entered, key="password")
         st.error("❌ Достъпът е отказан")
         return False
     else:
-        # Паролата е вярна
         return True
 
-# --- ПРОВЕРКА НА ДОСТЪПА ---
+# --- ОСНОВНО ПРИЛОЖЕНИЕ ---
 if check_password():
-    # АКО ПАРОЛАТА Е ВЯРНА, СЕ ПОКАЗВА ПРИЛОЖЕНИЕТО:
     st.title("🍦 Асистент за Планограми")
     
-    # Селектори
-    client_type = st.selectbox("1. Тип клиент:", ["ТТ", "АТЦ", "Бензиностанция"])
+    # 1. Тип клиент (Заменено с Петролен канал)
+    client_type = st.selectbox(
+        "1. Изберете тип на клиента:",
+        ["ТТ", "АТЦ", "Петролен канал"]
+    )
+
+    # 2. ПОДМЕНЮ ЗА БЕНЗИНОСТАНЦИИ (Показва се само при избор на Петролен канал)
+    sub_channel = None
+    if client_type == "Петролен канал":
+        sub_channel = st.selectbox(
+            "Изберете верига:",
+            ["OMV", "Shell", "Lukoil", "Rompetrol", "Petrol", "Others"]
+        )
+
+    # 3. Размер на фризера
     freezer_size = st.radio("2. Размер на фризера:", ["100см", "120см", "150см", "180см"], horizontal=True)
-    brand_choice = st.radio("3. Бранд:", ["Milka", "Nestle"], horizontal=True)
+
+    # 4. Бранд
+    brand_choice = st.radio("3. Изберете марка:", ["Milka", "Nestlé"], horizontal=True)
 
     st.divider()
 
-    # Логика за снимките
-    # Замени 'link_to_image' с реалните линкове от GitHub
-    planogram_images = {
-        ("Milka", "100см"): "https://raw.githubusercontent.com/user/repo/main/milka100.jpg",
-        ("Milka", "120см"): "https://raw.githubusercontent.com/user/repo/main/milka120.jpg",
-        ("Nestle", "100см"): "https://raw.githubusercontent.com/user/repo/main/nestle100.jpg",
-        # Добави останалите тук...
-    }
+    # Потвърждение на избора
+    selection_text = f"{brand_choice} | {freezer_size} | {client_type}"
+    if sub_channel:
+        selection_text += f" ({sub_channel})"
+    
+    st.info(f"📍 Избран план: **{selection_text}**")
 
-    if st.button("Покажи планограма"):
-        image_url = planogram_images.get((brand_choice, freezer_size))
-        
-        if image_url and "raw.githubusercontent" in image_url:
-            st.image(image_url, caption=f"План за {brand_choice} - {freezer_size}")
+    # --- ЛОГИКА ЗА СНИМКИТЕ ---
+    # Тук можеш да добавиш специфични снимки дори за отделните вериги
+    if st.button("ВИЖ ПЛАНОГРАМА"):
+        # Примерна логика: ако е OMV, можеш да заредиш специална снимка
+        if sub_channel == "OMV" and brand_choice == "Milka":
+            st.warning("Показване на специфична планограма за OMV...")
+            # st.image("link_to_omv_milka_image")
         else:
-            st.warning(f"Снимката за {brand_choice} ({freezer_size}) още не е качена.")
-            st.info("След като качиш снимките в GitHub, сложи техните 'Raw' линкове в кода.")
+            st.info("Зареждане на стандартна планограма за канала...")
+            # Тук ще бъде твоят стандартен механизъм със снимките, който обсъдихме
+            st.image("https://via.placeholder.com/800x400.png?text=Planogram+Placeholder", 
+                     caption=selection_text)
 
-    # Бутон за изход
-    if st.sidebar.button("Изход (Logout)"):
+    # Logout бутон в страничното меню
+    if st.sidebar.button("Изход"):
         st.session_state["password_correct"] = False
         st.rerun()
