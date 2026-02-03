@@ -76,45 +76,56 @@ with col1:
                 ["Стандартен фризер", "Гондола 4х11", "Гондола 4х8", "Гондола 4х4"]
             )
 
-    # ЛОГИКА ЗА СКРИВАНЕ: Показваме размерите само ако НЕ е избрана Гондола
+    # Проверка дали е избрана Гондола
     is_gondola = "Гондола" in specific_layout
     
-    freezer_size = "N/A" # Стойност по подразбиране за Гондола
+    # Стойности по подразбиране
+    freezer_size = "N/A"
+    brand = "Mix"
+
+    # ПОКАЗВАМЕ РАЗМЕР И МАРКА САМО АКО НЕ Е ГОНДОЛА
     if not is_gondola:
+        # 2. Размер на фризера
         st.write("**2. Размер на фризера:**")
         freezer_size = st.radio(
             "", 
             ["80см", "100см", "120см", "150см", "160см", "180см", "Вертикален"], 
             horizontal=True
         )
+        
+        # 3. Марка
+        st.write("**3. Марка:**")
+        brand = st.radio("", ["Milka", "Nestlé"], horizontal=True)
     else:
-        st.info("ℹ️ При избор на Гондола размерите на фризера са фиксирани.")
-
-    # 3. Марка
-    brand = st.radio("3. Марка", ["Milka", "Nestlé"], horizontal=True)
+        st.info("💡 Гондолите са със смесено излагане (Mix) и фиксиран размер.")
 
 with col2:
     st.subheader("🖼️ Визуализация")
     
-    # Формиране на име за избор
-    display_name = specific_layout if is_gondola else sub_channel
-    current_selection = f"{brand} | {display_name}"
-    if not is_gondola:
-        current_selection += f" | {freezer_size}"
+    # Формиране на име за избор (за показване и за търсене)
+    if is_gondola:
+        current_selection = f"Микс Продукти | {specific_layout}"
+        search_brand = "Mix"
+        search_target = specific_layout
+    else:
+        current_selection = f"{brand} | {sub_channel} | {freezer_size}"
+        search_brand = brand
+        search_target = sub_channel
         
     st.info(f"📍 Избор: **{current_selection}**")
 
     if st.button("📊 ВИЖ ПЛАНОГРАМА"):
         with st.spinner('Зареждане...'):
-            # Речникът вече включва търсене по тип излагане или канал
+            # Речникът вече включва "Mix" за гондолите
             planogram_links = {
-                ("Milka", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/user/repo/main/images/milka_gondola_4x11.jpg",
+                # Пример за Гондола
+                ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/user/repo/main/images/gondola_4x11_mix.jpg",
+                # Примери за стандартни фризери
                 ("Milka", "ОМВ", "120см"): "https://raw.githubusercontent.com/user/repo/main/images/milka_omv_120.jpg",
-                # Добави останалите линкове тук
+                ("Nestlé", "Лукойл", "100см"): "https://raw.githubusercontent.com/user/repo/main/images/nestle_lukoil_100.jpg",
             }
 
-            search_target = specific_layout if is_gondola else sub_channel
-            image_url = planogram_links.get((brand, search_target, freezer_size))
+            image_url = planogram_links.get((search_brand, search_target, freezer_size))
 
             if image_url:
                 st.image(image_url, caption=current_selection, use_container_width=True)
@@ -122,4 +133,4 @@ with col2:
                 st.warning("⚠️ Няма качена снимка за този избор.")
                 st.image("https://via.placeholder.com/800x500.png?text=No+Planogram", use_container_width=True)
 
-st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.5</small></center>", unsafe_allow_html=True)
+st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team | V 1.6</small></center>", unsafe_allow_html=True)
