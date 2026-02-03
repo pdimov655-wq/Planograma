@@ -11,7 +11,6 @@ st.set_page_config(
 # --- ПРОФЕСИОНАЛЕН ДИЗАЙН СЪС ЗАЩИТА ОТ DARK MODE ---
 st.markdown("""
     <style>
-    /* Скриване на системни менюта */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -68,7 +67,6 @@ if "password_correct" not in st.session_state:
     with col2:
         st.markdown("<br><h2 style='text-align: center; color: #1e3a8a;'>🔒 Вход</h2>", unsafe_allow_html=True)
         pwd = st.text_input("Въведете парола", type="password")
-        # Бутонът ВЛЕЗ е единственият, който остава за сигурност
         if st.button("ВЛЕЗ"):
             if pwd == "ice123":
                 st.session_state["password_correct"] = True
@@ -90,7 +88,6 @@ col1, col2 = st.columns([1, 1.5], gap="large")
 with col1:
     st.subheader("📋 Параметри")
     
-    # 1. Тип клиент
     client_type = st.selectbox("1. Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
     
     sub_channel = client_type
@@ -123,7 +120,6 @@ with col1:
 with col2:
     st.subheader("🖼️ Визуализация")
     
-    # Подготовка на избора
     if is_gondola:
         current_selection = f"Микс Продукти | {specific_layout}"
         search_brand = "Mix"
@@ -135,18 +131,36 @@ with col2:
         
     st.info(f"📍 Избор: **{current_selection}**")
 
-    # --- БАЗА ДАННИ С ЛИНКОВЕ (АВТОМАТИЧНО ЗАРЕЖДАНЕ) ---
+    # --- БАЗА ДАННИ С ЛИНКОВЕ ---
     planogram_links = {
-        # ОМВ Гондола 4х11
         ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
     }
 
     image_url = planogram_links.get((search_brand, search_target, freezer_size))
 
     if image_url:
+        # Показване на снимката
         st.image(image_url, caption=f"Подредба: {current_selection}", use_container_width=True)
+        
+        # БУТОН ЗА ZOOM (Отваря снимката в нов таб за детайлно гледане)
+        st.markdown(f"""
+            <a href="{image_url}" target="_blank" style="text-decoration: none;">
+                <div style="
+                    background-color: #0046ad;
+                    color: white;
+                    text-align: center;
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-top: 10px;
+                    font-weight: bold;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                ">
+                    🔍 УВЕЛИЧИ (ZOOM)
+                </div>
+            </a>
+        """, unsafe_allow_html=True)
     else:
         st.warning("⚠️ Снимката все още не е качена в базата данни.")
         st.image("https://via.placeholder.com/800x500.png?text=No+Planogram+Available", use_container_width=True)
 
-st.markdown("<br><hr><center><small style='color: #1e3a8a;'>© 2026 Ice Cream Sales Team | V 1.9</small></center>", unsafe_allow_html=True)
+st.markdown("<br><hr><center><small style='color: #1e3a8a;'>© 2026 Ice Cream Sales Team | V 2.0</small></center>", unsafe_allow_html=True)
