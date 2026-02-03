@@ -1,74 +1,101 @@
 import streamlit as st
 
-# Конфигурация на страницата
-st.set_page_config(page_title="Ice Cream Planograms", page_icon="🍦")
+# 1. Основна конфигурация и дизайн
+st.set_page_config(page_title="Ice Cream Planogram Pro", page_icon="🍦", layout="wide")
 
-# --- ФУНКЦИЯ ЗА ПАРОЛА ---
+# Custom CSS за професионален изглед
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f5f7f9;
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 20px;
+        height: 3em;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        border: none;
+    }
+    .stButton>button:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+    .stSelectbox, .stRadio {
+        background-color: white;
+        padding: 15px;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    h1 {
+        color: #1e3a8a;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- ПРОВЕРКА НА ПАРОЛА ---
 def check_password():
-    def password_entered():
-        if st.session_state["password"] == "ice123": # <--- ТВОЯТА ПАРОЛА
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]
-        else:
-            st.session_state["password_correct"] = False
-
     if "password_correct" not in st.session_state:
-        st.text_input("Въведете парола за достъп:", type="password", on_change=password_entered, key="password")
+        st.markdown("<h2 style='text-align: center;'>Вход в системата</h2>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1,2,1])
+        with col2:
+            pwd = st.text_input("Парола", type="password")
+            if st.button("Влез"):
+                if pwd == "ice123":
+                    st.session_state["password_correct"] = True
+                    st.rerun()
+                else:
+                    st.error("Грешна парола")
         return False
-    elif not st.session_state["password_correct"]:
-        st.text_input("Грешна парола! Опитайте отново:", type="password", on_change=password_entered, key="password")
-        st.error("❌ Достъпът е отказан")
-        return False
-    else:
-        return True
+    return True
 
-# --- ОСНОВНО ПРИЛОЖЕНИЕ ---
 if check_password():
-    st.title("🍦 Асистент за Планограми")
+    # --- СТРАНИЧНА ЛЕНТА (SIDEBAR) ---
+    with st.sidebar:
+        st.image("https://via.placeholder.com/150x80.png?text=LOGO", use_container_width=True)
+        st.title("Навигация")
+        st.info("Използвайте менюто за избор на обект и фризер.")
+        if st.button("Изход"):
+            del st.session_state["password_correct"]
+            st.rerun()
+
+    # --- ОСНОВНА ЧАСТ ---
+    st.title("🍦 Планограми: Дигитален Асистент")
     
-    # 1. Тип клиент (Заменено с Петролен канал)
-    client_type = st.selectbox(
-        "1. Изберете тип на клиента:",
-        ["ТТ", "АТЦ", "Петролен канал"]
-    )
+    col1, col2 = st.columns([1, 1], gap="large")
 
-    # 2. ПОДМЕНЮ ЗА БЕНЗИНОСТАНЦИИ (Показва се само при избор на Петролен канал)
-    sub_channel = None
-    if client_type == "Петролен канал":
-        sub_channel = st.selectbox(
-            "Изберете верига:",
-            ["OMV", "Shell", "Lukoil", "Rompetrol", "Petrol", "Others"]
-        )
-
-    # 3. Размер на фризера
-    freezer_size = st.radio("2. Размер на фризера:", ["100см", "120см", "150см", "180см"], horizontal=True)
-
-    # 4. Бранд
-    brand_choice = st.radio("3. Изберете марка:", ["Milka", "Nestlé"], horizontal=True)
-
-    st.divider()
-
-    # Потвърждение на избора
-    selection_text = f"{brand_choice} | {freezer_size} | {client_type}"
-    if sub_channel:
-        selection_text += f" ({sub_channel})"
-    
-    st.info(f"📍 Избран план: **{selection_text}**")
-
-    # --- ЛОГИКА ЗА СНИМКИТЕ ---
-    # Тук можеш да добавиш специфични снимки дори за отделните вериги
-    if st.button("ВИЖ ПЛАНОГРАМА"):
-        # Примерна логика: ако е OMV, можеш да заредиш специална снимка
-        if sub_channel == "OMV" and brand_choice == "Milka":
-            st.warning("Показване на специфична планограма за OMV...")
-            # st.image("link_to_omv_milka_image")
+    with col1:
+        st.subheader("📋 Параметри на обекта")
+        client_type = st.selectbox("Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
+        
+        if client_type == "Петролен канал":
+            sub_channel = st.selectbox("Верига бензиностанции", ["OMV", "Shell", "Lukoil", "Rompetrol", "Petrol", "Others"])
         else:
-            st.info("Зареждане на стандартна планограма за канала...")
-            # Тук ще бъде твоят стандартен механизъм със снимките, който обсъдихме
-            st.image("https://via.placeholder.com/800x400.png?text=Planogram+Placeholder", 
-                     caption=selection_text)
+            sub_channel = client_type
 
-    # Logout бутон в страничното меню
-    if st.sidebar.button("Изход"):
-        st.session_state["password_correct"] = False
-        st.rerun()
+        freezer_size = st.radio("Размер на фризера", ["100см", "120см", "150см", "180см"], horizontal=True)
+        brand = st.radio("Избор на бранд", ["Milka", "Nestlé"], horizontal=True)
+
+    with col2:
+        st.subheader("🖼️ Визуализация")
+        st.write("") # Празно пространство за подравняване
+        
+        # Бутон с икона
+        if st.button("📊 ГЕНЕРИРАЙ ПЛАН"):
+            with st.spinner('Зареждане на планограмата...'):
+                # Тук поставяш логиката за линковете (както в предишния пример)
+                # За демонстрация използваме placeholder:
+                st.success(f"Готов план за {sub_channel} ({freezer_size})")
+                st.image("https://via.placeholder.com/600x400.png?text=Planogram+View", use_container_width=True)
+                
+                # Допълнителна професионална опция:
+                st.download_button(label="📥 Изтегли PDF за принтиране", 
+                                 data="Sample Data", 
+                                 file_name=f"Planogram_{sub_channel}.pdf")
+
+    # Футър
+    st.markdown("---")
+    st.caption("© 2026 Търговски отдел | Всички права запазени")
+    
