@@ -68,13 +68,11 @@ if "password_correct" not in st.session_state:
 # --- ДИЗАЙН ЗА РАБОТНИЯ ПАНЕЛ (След Login) ---
 st.markdown("""
     <style>
-    /* Фон за работния панел */
     [data-testid="stAppViewContainer"] {
         background-color: #f8f9fa !important;
         background-image: none !important;
     }
 
-    /* Карти за избор */
     [data-testid="stVerticalBlock"] > div > div > div.stSelectbox, 
     [data-testid="stVerticalBlock"] > div > div > div.stRadio {
         background-color: white !important;
@@ -85,13 +83,11 @@ st.markdown("""
         margin-bottom: 15px !important;
     }
 
-    /* Цвят на текста */
     .stMarkdown, p, label, h1, h3 {
         color: #1e3a8a !important;
         font-weight: 600 !important;
     }
 
-    /* Zoom Бутон */
     .zoom-btn {
         display: block;
         background: linear-gradient(45deg, #0046ad, #448aff);
@@ -155,13 +151,19 @@ with col2:
         
     st.info(f"📍 Избор: **{current_selection}**")
 
-    # --- ОБНОВЕНА БАЗА ДАННИ С ПЛАНОГРАМИ ---
+    # --- БАЗА ДАННИ С ПЛАНОГРАМИ ---
     planogram_links = {
-        # ОМВ Гондола 4х11
+        # ОМВ Гондола
         ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
         
-        # АТЦ 80см Nestlé
+        # Nestlé АТЦ - Пълен списък
         ("Nestlé", "АТЦ", "80см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_80_atc.jpg",
+        ("Nestlé", "АТЦ", "100см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_100_atc.jpg",
+        ("Nestlé", "АТЦ", "120см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_120_atc.jpg",
+        ("Nestlé", "АТЦ", "150см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_150_atc.jpg",
+        ("Nestlé", "АТЦ", "160см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_160_atc.jpg",
+        ("Nestlé", "АТЦ", "180см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_180_atc.jpg",
+        ("Nestlé", "АТЦ", "Вертикален"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_vert_atc.jpg",
     }
 
     image_url = planogram_links.get((search_brand, search_target, freezer_size))
