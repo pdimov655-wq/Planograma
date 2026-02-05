@@ -68,13 +68,13 @@ if "password_correct" not in st.session_state:
 # --- ДИЗАЙН ЗА РАБОТНИЯ ПАНЕЛ (След Login) ---
 st.markdown("""
     <style>
-    /* Премахване на фона от началния екран за по-добра видимост */
+    /* Фон за работния панел */
     [data-testid="stAppViewContainer"] {
         background-color: #f8f9fa !important;
         background-image: none !important;
     }
 
-    /* Стилизиране на белите контейнери за избор */
+    /* Карти за избор */
     [data-testid="stVerticalBlock"] > div > div > div.stSelectbox, 
     [data-testid="stVerticalBlock"] > div > div > div.stRadio {
         background-color: white !important;
@@ -82,15 +82,16 @@ st.markdown("""
         border-radius: 15px !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
         border: 1px solid #e0e0e0 !important;
+        margin-bottom: 15px !important;
     }
 
-    /* Фиксиране на цвят на текста */
+    /* Цвят на текста */
     .stMarkdown, p, label, h1, h3 {
         color: #1e3a8a !important;
         font-weight: 600 !important;
     }
 
-    /* Модерен Zoom Бутон */
+    /* Zoom Бутон */
     .zoom-btn {
         display: block;
         background: linear-gradient(45deg, #0046ad, #448aff);
@@ -154,8 +155,13 @@ with col2:
         
     st.info(f"📍 Избор: **{current_selection}**")
 
+    # --- ОБНОВЕНА БАЗА ДАННИ С ПЛАНОГРАМИ ---
     planogram_links = {
+        # ОМВ Гондола 4х11
         ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
+        
+        # АТЦ 80см Nestlé
+        ("Nestlé", "АТЦ", "80см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_80_atc.jpg",
     }
 
     image_url = planogram_links.get((search_brand, search_target, freezer_size))
