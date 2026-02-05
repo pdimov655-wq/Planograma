@@ -2,161 +2,167 @@ import streamlit as st
 
 # 1. Основна конфигурация
 st.set_page_config(
-    page_title="Ice Cream Planogram Pro", 
+    page_title="Planogram Pro v4.1", 
     page_icon="🍦", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- СТРОГО СКРИВАНЕ НА СИСТЕМНИ ЕЛЕМЕНТИ (Manage app и др.) ---
+# --- PREMIUM UI/UX ДИЗАЙН С БУТОНИ (CHIPS) ---
 st.markdown("""
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+    html, body, [data-testid="stAppViewContainer"] {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    #MainMenu, footer, header {visibility: hidden;}
     .stAppDeployButton {display: none !important;}
-    [data-testid="stStatusWidget"] {visibility: hidden;}
-    [data-testid="stHeader"] {background: rgba(0,0,0,0) !important;}
-    </style>
-    """, unsafe_allow_html=True)
 
-# --- СИСТЕМА ЗА ВХОД С ФОН ---
-if "password_correct" not in st.session_state:
-    bg_image = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/froneri-brand-images.jpg"
-
-    st.markdown(f"""
-        <style>
-        [data-testid="stAppViewContainer"] {{
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("{bg_image}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }}
-        .login-card {{
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(15px);
-            padding: 40px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            text-align: center;
-            margin-top: 50px;
-            color: white !important;
-        }}
-        </style>
-    """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([0.2, 1, 0.2])
-    with col2:
-        st.markdown(f"""
-            <div class='login-card'>
-                <h2 style='color: white;'>🔒 Вход</h2>
-                <p style='color: white;'>Въведете парола</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        pwd = st.text_input("", type="password", placeholder="Парола...")
-        
-        if st.button("ВЛЕЗ"):
-            if pwd == "ice123":
-                st.session_state["password_correct"] = True
-                st.rerun()
-            else:
-                st.error("❌ Грешна парола!")
-    st.stop()
-
-# --- ДИЗАЙН ЗА РАБОТНИЯ ПАНЕЛ (След Login) ---
-st.markdown("""
-    <style>
-    [data-testid="stAppViewContainer"] {
-        background-color: #f8f9fa !important;
-        background-image: none !important;
+    /* СТИЛИЗИРАНЕ НА РАДИО БУТОНИТЕ КАТО ПЛОЧКИ (CHIPS) */
+    div[data-testid="stRadio"] > div {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
     }
 
-    [data-testid="stVerticalBlock"] > div > div > div.stSelectbox, 
-    [data-testid="stVerticalBlock"] > div > div > div.stRadio {
+    div[data-testid="stRadio"] label {
         background-color: white !important;
-        padding: 20px !important;
-        border-radius: 15px !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
-        border: 1px solid #e0e0e0 !important;
-        margin-bottom: 15px !important;
+        border: 2px solid #0046ad !important;
+        padding: 10px 20px !important;
+        border-radius: 12px !important;
+        color: #0046ad !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
     }
 
-    .stMarkdown, p, label, h1, h3 {
-        color: #1e3a8a !important;
-        font-weight: 600 !important;
+    /* Стил при избран бутон - СВЕТВА В СИНЬО */
+    div[data-testid="stRadio"] label[data-selected="true"] {
+        background-color: #0046ad !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(0, 70, 173, 0.3) !important;
+    }
+
+    /* Скриване на малките кръгчета на оригиналното радио */
+    div[data-testid="stRadio"] label div[data-testid="stMarkdownContainer"] p {
+        margin-bottom: 0 !important;
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > div > div:first-child {
+        display: none !important;
+    }
+
+    /* Заглавия и карти */
+    .main-title {
+        color: #1e3a8a;
+        font-weight: 800;
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .config-card {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .selection-tag {
+        background: #0046ad;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: inline-block;
     }
 
     .zoom-btn {
         display: block;
-        background: linear-gradient(45deg, #0046ad, #448aff);
+        background: linear-gradient(90deg, #0046ad, #0072ff);
         color: white !important;
-        padding: 15px;
-        border-radius: 12px;
+        padding: 18px;
+        border-radius: 15px;
         text-align: center;
         text-decoration: none;
-        font-weight: bold;
-        margin-top: 15px;
-        box-shadow: 0 4px 12px rgba(0, 70, 173, 0.2);
+        font-weight: 800;
+        margin-top: 20px;
+        text-transform: uppercase;
     }
     </style>
     """, unsafe_allow_html=True)
 
+# --- СИСТЕМА ЗА ВХОД (Бърза проверка) ---
+if "password_correct" not in st.session_state:
+    bg_image = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/froneri-brand-images.jpg"
+    st.markdown(f"<style>[data-testid='stAppViewContainer'] {{ background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{bg_image}'); background-size: cover; }}</style>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([0.1, 1, 0.1])
+    with col2:
+        st.markdown("<div style='height: 15vh;'></div>", unsafe_allow_html=True)
+        st.markdown("<h1 style='color: white; text-align: center;'>🍦 Planogram Pro</h1>", unsafe_allow_html=True)
+        pwd = st.text_input("Парола", type="password")
+        if st.button("ВЛЕЗ"):
+            if pwd == "ice123":
+                st.session_state["password_correct"] = True
+                st.rerun()
+    st.stop()
+
 # --- ГЛАВЕН ИНТЕРФЕЙС ---
-st.markdown("<h1 style='text-align: center;'>🍦 Дигитален Асистент за Планограми</h1>", unsafe_allow_html=True)
+st.markdown("<div class='main-title'>🍦 Digital Assistant</div>", unsafe_allow_html=True)
 
-with st.sidebar:
-    if st.button("Изход (Logout)"):
-        del st.session_state["password_correct"]
-        st.rerun()
-
-col1, col2 = st.columns([1, 1.5], gap="large")
+col1, col2 = st.columns([1, 1.2], gap="large")
 
 with col1:
-    st.subheader("📋 Параметри")
-    client_type = st.selectbox("1. Тип на клиента", ["ТТ", "АТЦ", "Петролен канал"])
+    st.markdown("### ⚙️ ИЗБЕРЕТЕ ПАРАМЕТРИ")
+    
+    # 1. ТИП КЛИЕНТ (ВЕЧЕ С БУТОНИ)
+    st.write("**📍 Тип на клиента:**")
+    client_type = st.radio("", ["ТТ", "АТЦ", "Петролен канал"], horizontal=True, key="client_type")
     
     sub_channel = client_type
     specific_layout = "Стандартен фризер"
 
+    # 2. ПОДКАНАЛ (Ако е Петролен)
     if client_type == "Петролен канал":
-        sub_channel = st.selectbox("Изберете верига", ["ОМВ", "Лукойл"])
+        st.write("**⛽ Верига:**")
+        sub_channel = st.radio("", ["ОМВ", "Лукойл"], horizontal=True, key="petrol_chain")
         if sub_channel == "ОМВ":
-            specific_layout = st.selectbox(
-                "Тип излагане (ОМВ):", 
-                ["Стандартен фризер", "Гондола 4х11", "Гондола 4х8", "Гондола 4х4"]
-            )
+            st.write("**🧊 Тип излагане:**")
+            specific_layout = st.radio("", ["Стандартен", "Гондола 4х11", "Гондола 4х8", "Гондола 4х4"], horizontal=True)
 
     is_gondola = "Гондола" in specific_layout
     freezer_size, brand = "N/A", "Mix"
 
     if not is_gondola:
-        st.write("**2. Размер на фризера:**")
-        freezer_size = st.radio("", ["80см", "100см", "120см", "150см", "160см", "180см", "Вертикален"], horizontal=True)
-        st.write("**3. Марка:**")
-        brand = st.radio("", ["Milka", "Nestlé"], horizontal=True)
-    else:
-        st.info("💡 Гондолите са със смесено излагане (Mix).")
+        st.markdown("---")
+        st.write("**📐 Размер на фризера:**")
+        freezer_size = st.radio("", ["80см", "100см", "120см", "150см", "160см", "180см", "Вертикален"], horizontal=True, key="size")
+        
+        st.write("**🏷️ Марка:**")
+        brand = st.radio("", ["Milka", "Nestlé"], horizontal=True, key="brand")
 
 with col2:
-    st.subheader("🖼️ Визуализация")
+    st.markdown("### 📸 ПРЕГЛЕД")
     
+    # Генериране на описание
     if is_gondola:
-        current_selection = f"Микс Продукти | {specific_layout}"
+        current_selection = f"MIX • {specific_layout}"
         search_brand, search_target = "Mix", specific_layout
     else:
-        current_selection = f"{brand} | {sub_channel} | {freezer_size}"
+        current_selection = f"{brand.upper()} • {sub_channel} • {freezer_size}"
         search_brand, search_target = brand, sub_channel
         
-    st.info(f"📍 Избор: **{current_selection}**")
+    st.markdown(f"<div class='selection-tag'>📍 {current_selection}</div>", unsafe_allow_html=True)
 
-    # --- БАЗА ДАННИ С ПЛАНОГРАМИ ---
+    # БАЗА ДАННИ
     planogram_links = {
-        # ОМВ Гондола
         ("Mix", "Гондола 4х11", "N/A"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/%D0%9E%D0%BC%D0%B2%204x11.jpg",
-        
-        # Nestlé АТЦ - Пълен списък
         ("Nestlé", "АТЦ", "80см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_80_atc.jpg",
         ("Nestlé", "АТЦ", "100см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_100_atc.jpg",
         ("Nestlé", "АТЦ", "120см"): "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Nestle_120_atc.jpg",
@@ -170,13 +176,12 @@ with col2:
 
     if image_url:
         st.markdown(f"""
-            <div style='border: 4px solid white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);'>
+            <div style='border: 6px solid white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);'>
                 <img src='{image_url}' style='width: 100%; display: block;'>
             </div>
-            <a href="{image_url}" target="_blank" class="zoom-btn">🔍 УВЕЛИЧИ (ZOOM)</a>
+            <a href="{image_url}" target="_blank" class="zoom-btn">🔍 УВЕЛИЧИ СНИМКАТА</a>
         """, unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Снимката все още не е качена.")
-        st.image("https://via.placeholder.com/800x500.png?text=No+Image+Available", use_container_width=True)
+        st.warning("⚠️ Липсва планограма за този избор.")
 
-st.markdown("<br><hr><center><small>© 2026 Ice Cream Sales Team</small></center>", unsafe_allow_html=True)
+st.markdown("<br><center><p style='color: #7f8c8d; font-size: 0.8rem;'>© 2026 FRONERI SALES TOOL</p></center>", unsafe_allow_html=True)
