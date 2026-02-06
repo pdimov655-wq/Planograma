@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- СТРОГО СКРИВАНЕ НА СИСТЕМНИ ЕЛЕМЕНТИ (Manage app и др.) ---
+# --- СТРОГО СКРИВАНЕ НА СИСТЕМНИ ЕЛЕМЕНТИ ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -20,14 +20,14 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- СИСТЕМА ЗА ВХОД С ФОН ---
+# --- СИСТЕМА ЗА ВХОД С ФОН 1 ---
 if "password_correct" not in st.session_state:
-    bg_image = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/froneri-brand-images.jpg"
+    login_bg = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/froneri-brand-images.jpg"
 
     st.markdown(f"""
         <style>
         [data-testid="stAppViewContainer"] {{
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("{bg_image}");
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("{login_bg}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -65,30 +65,35 @@ if "password_correct" not in st.session_state:
                 st.error("❌ Грешна парола!")
     st.stop()
 
-# --- ДИЗАЙН ЗА РАБОТНИЯ ПАНЕЛ (След Login) ---
-st.markdown("""
-    <style>
-    [data-testid="stAppViewContainer"] {
-        background-color: #f8f9fa !important;
-        background-image: none !important;
-    }
+# --- ДИЗАЙН ЗА ОСНОВНОТО МЕНЮ С НОВ ФОН 2 ---
+main_menu_bg = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/heads/main/Images/Main_backgroung.jpg"
 
+st.markdown(f"""
+    <style>
+    [data-testid="stAppViewContainer"] {{
+        background-image: linear-gradient(rgba(248, 249, 250, 0.85), rgba(248, 249, 250, 0.85)), url("{main_menu_bg}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+
+    /* Стил за белите карти с параметри */
     [data-testid="stVerticalBlock"] > div > div > div.stSelectbox, 
-    [data-testid="stVerticalBlock"] > div > div > div.stRadio {
+    [data-testid="stVerticalBlock"] > div > div > div.stRadio {{
         background-color: white !important;
         padding: 20px !important;
         border-radius: 15px !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
         border: 1px solid #e0e0e0 !important;
         margin-bottom: 15px !important;
-    }
+    }}
 
-    .stMarkdown, p, label, h1, h3 {
+    .stMarkdown, p, label, h1, h3 {{
         color: #1e3a8a !important;
-        font-weight: 600 !important;
-    }
+        font-weight: 700 !important;
+    }}
 
-    .zoom-btn {
+    .zoom-btn {{
         display: block;
         background: linear-gradient(45deg, #0046ad, #448aff);
         color: white !important;
@@ -99,7 +104,7 @@ st.markdown("""
         font-weight: bold;
         margin-top: 15px;
         box-shadow: 0 4px 12px rgba(0, 70, 173, 0.2);
-    }
+    }}
     </style>
     """, unsafe_allow_html=True)
 
