@@ -71,7 +71,7 @@ main_menu_bg = "https://raw.githubusercontent.com/pdimov655-wq/Planograma/refs/h
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] {{
-        background-image: linear-gradient(rgba(248, 249, 250, 0.85), rgba(248, 249, 250, 0.85)), url("{main_menu_bg}");
+        background-image: linear-gradient(rgba(248, 249, 250, 0.50), rgba(248, 249, 250, 0.50)), url("{main_menu_bg}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
